@@ -83,7 +83,7 @@ public:
      * @return 包裹函数返回值的future
      */
     template <class F, class... Args>
-    auto addTask(F&& func, Args&&... args) -> std::future<typename std::invoke_result<F, Args...>>;
+    auto addTask(F&& func, Args&&... args) -> std::future<typename std::invoke_result<F, Args...>::type>;
 
 private:
     // 线程数组
@@ -120,6 +120,7 @@ ThreadPool::ThreadPool(size_t pool_size)
 
 ThreadPool::~ThreadPool()
 {
+    close();
 }
 
 size_t ThreadPool::size() const
@@ -139,7 +140,7 @@ void ThreadPool::start()
     for (size_t i = 0; i < _pool_size; ++i) {
         // 创建线程
         // C++中，线程创建即执行
-        _threads.emplace_back(ThreadPool::loop, this);
+        _threads.emplace_back(&ThreadPool::loop, this);
     }
 }
 
@@ -159,7 +160,7 @@ void ThreadPool::close()
 // C++17后result_of被废除
 // std::future<typename std::result_of<F(Args...)>::type>
 template <class F, class... Args>
-auto ThreadPool::addTask(F&& func, Args&&... args) -> std::future<typename std::invoke_result<F, Args...>>
+auto ThreadPool::addTask(F&& func, Args&&... args) -> std::future<typename std::invoke_result<F, Args...>::type>
 {
     // 包裹用户传进来的函数
     using RtnType = typename std::invoke_result<F, Args...>::type;
