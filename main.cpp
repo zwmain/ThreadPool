@@ -40,7 +40,7 @@ int main()
     }
 
     auto endTime = std::chrono::system_clock::now();
-    auto totalTime = startTime - endTime;
+    auto totalTime = endTime - startTime;
     long long int val = std::chrono::duration_cast<std::chrono::milliseconds>(totalTime).count();
     std::cout << "总用时：" << val << "ms" << std::endl;
     return 0;
