@@ -198,10 +198,7 @@ void ThreadPool::loop()
         // 如果后面函数返回true，则停止等待
         while (_tasks.empty()) {
             // 等待时会自动解锁
-            _cond.wait(lock, [this]() -> bool {
-                // 如果运行状态为false或任务队列不为空，则停止等待
-                return !this->_is_run || !this->_tasks.empty();
-            });
+            _cond.wait(lock);
             // 如果线程池已经关闭则退出线程
             if (!_is_run) {
                 return;
